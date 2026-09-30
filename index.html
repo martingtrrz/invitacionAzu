@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Shower - Valentina</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    
+    <!-- Configuración de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fondo: '#feedf3',
+                        valentina: '#f681ab',
+                        boton: '#b54b71',
+                        textoOscuro: '#5a2538'
+                    },
+                    fontFamily: {
+                        migra: ['Migra', '"Playfair Display"', 'serif'],
+                        luxurious: ['"Luxurious Script"', 'cursive'],
+                        sans: ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ESTILOS CSS -->
+    <style>
+        body {
+            /* Usamos la imagen de fondo repitiéndola para evitar el zoom excesivo */
+            background-image: url('background.png');
+            background-size: contain; 
+            background-repeat: repeat;
+            background-position: top center;
+            background-attachment: fixed;
+            background-color: #feedf3;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Contenedor tipo Tarjeta / Arco (Como en el PDF) */
+        .invitation-card {
+            background-color: rgba(253, 242, 246, 0.95);
+            border-radius: 180px 180px 30px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(181, 75, 113, 0.2);
+            border: 4px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 32px 0 rgba(181, 75, 113, 0.08);
+        }
+
+        /* Animaciones Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Animaciones Decorativas */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        
+        @keyframes float-reverse {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(12px) rotate(-2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float-reverse { animation: float-reverse 5s ease-in-out infinite; }
+
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.05); }
+        }
+        .animate-pulse-soft { animation: pulse-soft 3s infinite; }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow { animation: spin-slow 12s linear infinite; }
+    </style>
+</head>
+<body class="font-sans text-textoOscuro antialiased selection:bg-valentina selection:text-white p-4 md:p-8 min-h-screen">
+
+    <!-- REPRODUCTOR DE AUDIO OCULTO -->
+    <audio id="bgMusic" loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <!-- Contenedor Principal Más Angosto -->
+    <main class="invitation-card max-w-[360px] mx-auto w-full pb-16 relative mt-2">
+        
+        <!-- Botón de Audio Superior con Texto Circular -->
+        <div class="absolute top-8 left-0 right-0 flex justify-center z-50">
+            <div class="relative flex items-center justify-center w-24 h-24">
+                <!-- Texto Circular Rotando (Compatible con Móvil/Safari) -->
+                <svg class="absolute inset-0 w-full h-full animate-spin-slow pointer-events-none text-boton opacity-90" viewBox="0 0 100 100">
+                    <defs>
+                        <path id="circlePath" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" />
+                    </defs>
+                    <text font-size="9.5" font-family="sans-serif" font-weight="bold" fill="currentColor">
+                        <textPath href="#circlePath" textLength="226" lengthAdjust="spacing">
+                            DALE PLAY • DALE PLAY • DALE PLAY • DALE PLAY • 
+                        </textPath>
+                    </text>
+                </svg>
+                
+                <!-- Botón Central -->
+                <button id="playBtnTop" class="absolute bg-boton/90 backdrop-blur-md text-white rounded-full w-14 h-14 shadow-lg hover:bg-valentina transition-all flex items-center justify-center animate-pulse-soft z-10">
+                    <!-- ml-1 para centrar visualmente el triángulo de play -->
+                    <svg id="playIconTop" class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="pauseIconTop" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: HERO / PORTADA -->
+        <section class="min-h-[85vh] flex flex-col items-center justify-center p-6 text-center relative reveal active w-full pt-32">
+            <!-- Moños más grandes en las esquinas -->
+            <img src="bowleft.png" class="absolute top-0 left-0 w-36 md:w-40 opacity-90 mix-blend-multiply pointer-events-none" alt="">
+            <img src="bowright.png" class="absolute top-0 right-0 w-36 md:w-40 opacity-90 mix-blend-multiply pointer-events-none" alt="">
+            
+            <!-- Corazones Animados Flotantes -->
+            <img src="corazones.png" class="absolute top-32 left-4 w-12 opacity-60 mix-blend-multiply pointer-events-none animate-float" style="animation-delay: 0s;" alt="">
+            <img src="corazones.png" class="absolute top-64 right-4 w-14 opacity-60 mix-blend-multiply pointer-events-none animate-float-reverse" style="animation-delay: 1.5s;" alt="">
+            <img src="corazones.png" class="absolute bottom-40 right-10 w-10 opacity-50 mix-blend-multiply pointer-events-none animate-float" style="animation-delay: 3s;" alt="">
+
+            <p class="font-migra tracking-[0.6em] text-sm md:text-base uppercase text-textoOscuro mb-1 z-10" id="txt-encabezado"></p>
+            
+            <!-- Nombre de Valentina -->
+            <img src="valentina.png" alt="Valentina" class="w-64 md:w-72 h-auto object-contain mb-2 drop-shadow-md z-10 transform hover:scale-105 transition-transform duration-700 animate-pulse-soft" />
+            
+            <!-- Osita Animada -->
+            <img src="bear.png" alt="Osita" class="w-64 md:w-72 h-auto object-contain mb-6 drop-shadow-lg animate-float z-10" />
+
+            <!-- Texto de Bienvenida -->
+            <div class="glass-panel p-6 rounded-3xl max-w-sm mx-auto mb-8 relative z-10 transition-transform hover:scale-[1.02] duration-500">
+                <p class="font-sans text-sm md:text-base text-textoOscuro italic leading-relaxed">
+                    "Con muchísima ilusión y amor, te invitamos a celebrar la próxima llegada de nuestra pequeña."
+                </p>
+                <p class="font-migra font-bold text-boton mt-4 text-xl">Azucena y Jorge</p>
+            </div>
+            
+            <!-- Indicador de Scroll -->
+            <div class="animate-bounce text-boton flex flex-col items-center mt-2 relative z-10">
+                <span class="text-xs uppercase tracking-widest mb-2 font-migra font-bold">Desliza</span>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CUENTA REGRESIVA -->
+        <section class="reveal p-6 my-2 relative z-10">
+            <div class="glass-panel rounded-[2rem] p-8 text-center transition-transform hover:scale-[1.02] duration-500 relative">
+                <!-- Decoraciones -->
+                <img src="corazones.png" class="absolute -top-5 -left-4 w-12 opacity-80 mix-blend-multiply animate-float pointer-events-none z-20" alt="">
+                <img src="bowright.png" class="absolute -bottom-4 -right-4 w-16 opacity-90 mix-blend-multiply rotate-12 pointer-events-none z-20" alt="">
+                
+                <h2 class="font-migra text-3xl italic mb-6 text-boton relative z-10">Cuenta Regresiva</h2>
+                <div class="flex justify-center gap-2 md:gap-4 text-textoOscuro">
+                    <div class="flex flex-col items-center">
+                        <span id="days" class="text-2xl md:text-3xl font-migra bg-white/90 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-md text-boton animate-pulse-soft">00</span>
+                        <span class="text-[10px] md:text-xs uppercase tracking-wider mt-2 font-bold">Días</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="hours" class="text-2xl md:text-3xl font-migra bg-white/90 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-md text-boton animate-pulse-soft" style="animation-delay: 0.5s;">00</span>
+                        <span class="text-[10px] md:text-xs uppercase tracking-wider mt-2 font-bold">Hrs</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="mins" class="text-2xl md:text-3xl font-migra bg-white/90 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-md text-boton animate-pulse-soft" style="animation-delay: 1s;">00</span>
+                        <span class="text-[10px] md:text-xs uppercase tracking-wider mt-2 font-bold">Min</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="secs" class="text-2xl md:text-3xl font-migra bg-white/90 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-md text-boton animate-pulse-soft" style="animation-delay: 1.5s;">00</span>
+                        <span class="text-[10px] md:text-xs uppercase tracking-wider mt-2 font-bold">Seg</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: FECHA Y UBICACIÓN -->
+        <section class="reveal p-6 my-2 relative z-10">
+            <div class="glass-panel rounded-[2rem] p-8 text-center transition-transform hover:scale-[1.02] duration-500 relative">
+                <!-- Decoraciones -->
+                <img src="bowleft.png" class="w-32 mx-auto -mt-2 mb-3 opacity-90 mix-blend-multiply pointer-events-none" alt="Moño">
+                
+                <h2 class="font-migra text-3xl italic mb-6 text-boton relative z-10">Cuándo & Dónde</h2>
+                
+                <div class="mb-6">
+                    <p class="text-xl font-bold uppercase tracking-wider mb-1 text-textoOscuro" id="txt-dia-semana"></p>
+                    <p class="text-6xl font-migra text-valentina mb-1 drop-shadow-sm" id="txt-dia-numero"></p>
+                    <p class="uppercase tracking-widest text-sm mb-2 text-textoOscuro" id="txt-mes-anio"></p>
+                    <p class="text-lg font-migra italic font-bold text-boton" id="txt-hora"></p>
+                </div>
+
+                <div class="w-20 h-px bg-boton/30 mx-auto my-6"></div>
+
+                <div class="mb-8 text-textoOscuro">
+                    <p class="font-bold text-xl mb-1" id="txt-lugar-nombre"></p>
+                    <p class="text-sm opacity-90" id="txt-lugar-direccion"></p>
+                </div>
+
+                <a href="#" id="btn-mapa" target="_blank" class="inline-flex items-center gap-2 bg-boton text-white px-8 py-3 rounded-full font-bold hover:bg-valentina transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Ver Ubicación
+                </a>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: REGALOS -->
+        <section class="reveal p-6 my-2 relative z-10">
+            <div class="glass-panel rounded-[2rem] p-8 text-center shadow-lg transition-transform hover:scale-[1.02] duration-500 relative">
+                <!-- Decoraciones -->
+                <img src="corazones.png" class="absolute -top-6 -right-4 w-14 opacity-80 mix-blend-multiply animate-float-reverse pointer-events-none z-20" alt="">
+                <img src="bowleft.png" class="absolute -bottom-4 -left-4 w-16 opacity-90 mix-blend-multiply -rotate-12 pointer-events-none z-20" alt="">
+
+                <h2 class="font-migra text-3xl italic mb-2 text-boton relative z-10">Mesa de Regalos</h2>
+                
+                <button id="btnToggleGifts" class="inline-block mt-2 bg-boton/10 text-boton border border-boton px-6 py-2 rounded-full font-bold text-sm hover:bg-boton hover:text-white transition-all shadow-sm whitespace-nowrap">
+                    Ver sugerencias de regalos
+                </button>
+
+                <div id="giftsContent" class="hidden mt-6 transition-all duration-300">
+                    <p class="text-sm mb-4 opacity-90 text-textoOscuro">Tu presencia es nuestro mejor regalo. Si deseas tener un detalle con Valentina, te sugerimos con cariño:</p>
+                    
+                    <div class="text-left bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white text-sm shadow-md space-y-3">
+                        <ul class="list-disc list-inside space-y-2 text-textoOscuro marker:text-valentina">
+                            <li>Ropa de <strong>invierno</strong> (Talla 0 a 6 meses)</li>
+                            <li>Ropa de <strong>verano</strong> (Talla 6+ meses)</li>
+                            <li>Biberones (Marca <strong>Philips Avent</strong>)</li>
+                            <li>Toallitas húmedas o de algodón</li>
+                            <li>Baberos</li>
+                            <li>Productos de higiene para bebé</li>
+                        </ul>
+                        <div class="w-full h-px bg-boton/20 my-4"></div>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-6 h-6 text-boton" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <p class="font-bold text-boton text-base">Aportación en Efectivo</p>
+                        </div>
+                        <p class="text-xs text-textoOscuro pl-9 mt-1">También contaremos con un buzón el día del evento por si prefieres llevar tu sobre.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: RSVP -->
+        <section class="reveal p-6 mt-2 mb-8 relative z-10">
+            <div class="text-center glass-panel p-8 rounded-[2rem] transition-transform hover:scale-[1.02] duration-500 relative">
+                <!-- Decoraciones -->
+                <img src="corazones.png" class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-14 opacity-80 mix-blend-multiply animate-float pointer-events-none z-20" alt="">
+                
+                <h2 class="font-migra text-3xl italic mb-4 text-boton mt-4 relative z-10">Confirmación</h2>
+                <p class="text-sm mb-6 opacity-90 text-textoOscuro">Por favor, confirma tu asistencia para esperarte con mucha alegría.</p>
+                
+                <a href="#" id="btn-rsvp" target="_blank" class="inline-block w-full bg-boton text-white py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-valentina transition-all shadow-lg transform hover:-translate-y-1 duration-300">
+                    Confirmar Asistencia
+                </a>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center p-6 text-sm opacity-90 font-migra italic flex flex-col items-center relative z-10">
+            <img src="muchasgracias.png" alt="Muchas Gracias" class="w-48 mb-6 mix-blend-multiply drop-shadow-md animate-pulse-soft" />
+            <p class="text-textoOscuro font-bold text-base">¡Gracias por ser parte de este momento!</p>
+        </footer>
+
+    </main>
+
+    <!-- SCRIPTS (Lógica y Configuración) -->
+    <script>
+        const EVENT_CONFIG = {
+            encabezado: "<br>Tenemos el honor de invitarte al<br><br><span class='block text-3xl md:text-4xl text-boton font-bold mt-2 mb-1 tracking-[0.2em]'>BABY SHOWER</span><span class='text-xs'><br>de</span>",
+            diaSemana: "Sábado",
+            diaNumero: "7",
+            mesAnio: "Noviembre 2026",
+            hora: "6:00 PM",
+            fechaEvento: new Date(2026, 10, 7, 18, 0, 0).getTime(),
+            lugarNombre: "Salón de Eventos",
+            lugarDireccion: "Toca el botón para abrir el mapa",
+            urlMapa: "https://maps.app.goo.gl/EVzcyZ5gAkdnsp8n6", 
+            urlFormularioRSVP: "https://forms.gle/bdpteWGxVwqN7GpQA", 
+            urlAudio: "./musica.mp3" 
+        };
+
+        // Funciones seguras para prevenir errores de elementos nulos
+        const safeSetText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = text; // Permite el <br>
+        };
+
+        const safeSetHref = (id, href) => {
+            const el = document.getElementById(id);
+            if (el) el.href = href;
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            safeSetText('txt-encabezado', EVENT_CONFIG.encabezado);
+            safeSetText('txt-dia-semana', EVENT_CONFIG.diaSemana);
+            safeSetText('txt-dia-numero', EVENT_CONFIG.diaNumero);
+            safeSetText('txt-mes-anio', EVENT_CONFIG.mesAnio);
+            safeSetText('txt-hora', EVENT_CONFIG.hora);
+            safeSetText('txt-lugar-nombre', EVENT_CONFIG.lugarNombre);
+            safeSetText('txt-lugar-direccion', EVENT_CONFIG.lugarDireccion);
+            
+            safeSetHref('btn-mapa', EVENT_CONFIG.urlMapa);
+            safeSetHref('btn-rsvp', EVENT_CONFIG.urlFormularioRSVP);
+            
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                const source = bgMusic.querySelector('source');
+                if (source) source.src = EVENT_CONFIG.urlAudio;
+                bgMusic.load(); 
+            }
+        });
+
+        // 1. Reproductor de Audio Superior (Circular)
+        const audio = document.getElementById('bgMusic');
+        const playBtnTop = document.getElementById('playBtnTop');
+        const playIconTop = document.getElementById('playIconTop');
+        const pauseIconTop = document.getElementById('pauseIconTop');
+        let isPlaying = false;
+
+        if (playBtnTop && audio) {
+            playBtnTop.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    if(playIconTop) playIconTop.classList.remove('hidden');
+                    if(pauseIconTop) pauseIconTop.classList.add('hidden');
+                    playBtnTop.classList.add('animate-pulse-soft');
+                } else {
+                    audio.play().catch(e => console.log(e));
+                    if(playIconTop) playIconTop.classList.add('hidden');
+                    if(pauseIconTop) pauseIconTop.classList.remove('hidden');
+                    playBtnTop.classList.remove('animate-pulse-soft');
+                }
+                isPlaying = !isPlaying;
+            });
+        }
+
+        // 2. Animaciones Reveal al hacer scroll
+        const revealElements = document.querySelectorAll('.reveal');
+        if (revealElements.length > 0 && 'IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+            
+            revealElements.forEach(el => {
+                if(!el.classList.contains('active')) revealObserver.observe(el);
+            });
+        }
+
+        // 3. Cuenta Regresiva
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = EVENT_CONFIG.fechaEvento - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                safeSetText('days', "00");
+                safeSetText('hours', "00");
+                safeSetText('mins', "00");
+                safeSetText('secs', "00");
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            safeSetText('days', days < 10 ? '0' + days : days);
+            safeSetText('hours', hours < 10 ? '0' + hours : hours);
+            safeSetText('mins', minutes < 10 ? '0' + minutes : minutes);
+            safeSetText('secs', seconds < 10 ? '0' + seconds : seconds);
+        }, 1000);
+
+        // 4. Toggle Mesa de Regalos
+        const btnToggleGifts = document.getElementById('btnToggleGifts');
+        const giftsContent = document.getElementById('giftsContent');
+        if (btnToggleGifts && giftsContent) {
+            btnToggleGifts.addEventListener('click', () => {
+                if (giftsContent.classList.contains('hidden')) {
+                    giftsContent.classList.remove('hidden');
+                    btnToggleGifts.innerText = "Ocultar sugerencias";
+                } else {
+                    giftsContent.classList.add('hidden');
+                    btnToggleGifts.innerText = "Ver sugerencias de regalos";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
